@@ -13,12 +13,12 @@ jobs:
       - checkout
 
       - run:
-        name: npm install
-        command: cd functions && npm install
+          name: npm install
+          command: cd functions && npm install
 
       - run:
-        name: build & deploy with firebase
-        command: ./node_modules/.bin/firebase deploy --token=$FIREBASE_DEPLOY_TOKEN
+          name: build & deploy with firebase
+          command: ./node_modules/.bin/firebase deploy --token=$FIREBASE_DEPLOY_TOKEN
               
 workflows:
   version: 2
