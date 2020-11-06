@@ -1,0 +1,68 @@
+version: 2.1
+
+executors:
+  my-executor:
+    docker:
+      - image: google/cloud-sdk
+    working_directory: ~/workspace
+
+jobs:
+  build:
+    executor: my-executor
+
+    steps:
+      - checkout
+
+      - run:
+        name: npm install
+        command: npm install
+
+      - run:
+        name: npm run build
+        command: npm run build
+
+      - persist_to_workspace:
+          root: ~/workspace
+          paths:
+            - lib
+            - package.json
+            - package-lock.json
+
+  deploy:
+    executor: my-executor
+    
+    steps:
+      - attach_workspace:
+        at: ~/workspace
+
+      - run:
+        name: Authorize GCloud Command Line Tool
+        command: |
+          echo $GCLOUD_SERVICE_KEY | base64 --decode | gcloud auth activate-service-account --key-file=-
+      
+      - run:
+        name: Deploy To Google Cloud Functions
+        command: |
+          FUNCTION_NAME=circleci_graphouille
+          ENTRYPOINT=index
+          GCP_PROJECT=graphouille
+          gcloud functions deploy $FUNCTION_NAME \
+            --entry-point $ENTRYPOINT \
+            --runtime nodejs12 \
+            --trigger-http \
+            --source ./functions/ \
+            --project $GCP_PROJECT \
+            --service-account circleci-gcf-deployer@graphouille.iam.gserviceaccount.com
+              
+workflows:
+  version: 2
+  build-test-and-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
