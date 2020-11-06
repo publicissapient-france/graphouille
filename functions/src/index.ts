@@ -6,7 +6,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request: any,
     console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
     console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
 
-    let intentMap = new Map<string, (request: any) => Promise<string>>();
+    const intentMap = new Map<string, (request: any) => Promise<string>>();
     intentMap.set('Word Add', wordhandler.addWord);
     intentMap.set('Word Ask', wordhandler.askWord);
     intentMap.set('Word Delete', wordhandler.deleteWord);
@@ -20,10 +20,17 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request: any,
         const responseBody = webhookresponse.formatResponse([text], source)
         console.log('Dialogflow Response body: ' + JSON.stringify(responseBody));
         return response.send(responseBody);
+      })
+      .catch(err => {
+        console.log(`Dialogflow error: ${err}`);
+        return response.status(500).send(
+          webhookresponse.formatResponse(["Désolé, il y a eu une erreur"], source)
+      );
       });
+
     }
     else {
-        console.log(`error, intent ${intent} not found`)
+        console.log(`Dialogflow error: intent ${intent} not found`)
         return response.status(500).send(
             webhookresponse.formatResponse(["Désolé, il y a eu une erreur"], source)
         );

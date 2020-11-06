@@ -6,6 +6,6 @@ export function formatResponse(texts: Array<string>, source: string): any {
             }
         ],
         "source": source,
-        "output_contexts": [],
+        "output_contexts": []
     }
 }
