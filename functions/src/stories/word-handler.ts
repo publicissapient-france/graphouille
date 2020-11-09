@@ -1,9 +1,11 @@
-import * as store from '../store';
-
-const db = store.init()
+import * as store from '../store/store';
 
 function getEntity(requestBody: any, name: string): any {
     return requestBody.queryResult.parameters[name]
+}
+
+function getSource(requestBody: any): any {
+    return requestBody.body.originalDetectIntentRequest.source
 }
 
 function isNotEmpty(array: any): boolean {
@@ -12,10 +14,11 @@ function isNotEmpty(array: any): boolean {
 
 export async function addWord(request: any): Promise<string> {
     const words: Array<string> = getEntity(request, "any")
+    const readonly: boolean = getSource(request) == "DIALOGFLOW_CONSOLE" ? true : false
 
     if (isNotEmpty(words)) {
-        return store.updateCollection(db, words.map(w => w.toLowerCase()))
-            .then(doc => {
+        return store.updateCollection(words.map(w => w.toLowerCase()), readonly)
+            .then(() => {
                 return `Bien, j'ajoute ${words.toString()}`;
             })
             .catch(err => {
@@ -30,10 +33,11 @@ export async function addWord(request: any): Promise<string> {
 
 export async function deleteWord(request: any): Promise<string> {
     const words: Array<string> = getEntity(request, "any")
+    const readonly: boolean = getSource(request) == "DIALOGFLOW_CONSOLE" ? true : false
 
     if (isNotEmpty(words)) {
-        return store.deleteCollection(db, words.map(w => w.toLowerCase()))
-            .then(doc => {
+        return store.deleteCollection(words.map(w => w.toLowerCase()), readonly)
+            .then(() => {
                 return `Bien, j'oublie ${words.toString()}`;
             })
             .catch(err => {
@@ -50,7 +54,7 @@ export async function searchWord(request: any): Promise<string> {
     const words: Array<string> = getEntity(request, "any")
 
     if (isNotEmpty(words)) {
-        return store.getWords(db)
+        return store.getWords()
             .then(found => {
                 const word = words[0].toLowerCase()
                 if (found.includes(word)) return `Je connais le mot ${word} !`
@@ -66,7 +70,7 @@ export async function askWord(request: any): Promise<string> {
     const number: number = getEntity(request, "number")
     const numberOfWords = (!number) ? 1 : number
 
-    return store.getWords(db, numberOfWords)
+    return store.getWords(numberOfWords)
         .then(words => {
             if(isNotEmpty(words)) {
                 return `Voilà ce que je te propose de dessiner : ${words.toString()}`

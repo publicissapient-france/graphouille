@@ -2,7 +2,7 @@ import * as adm from 'firebase-admin';
 import * as functions from 'firebase-functions';
 
 function document(db: adm.firestore.Firestore): FirebaseFirestore.DocumentReference<any> {
-    return db.collection('dialogflow').doc('toDelete');
+    return db.collection('dialogflow').doc('graphouille');
 }
 
 function setCollection(db: adm.firestore.Firestore, words: any): Promise<adm.firestore.WriteResult> {
