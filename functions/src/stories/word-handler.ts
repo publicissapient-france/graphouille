@@ -5,7 +5,7 @@ function getEntity(requestBody: any, name: string): any {
 }
 
 function getSource(requestBody: any): any {
-    return requestBody.body.originalDetectIntentRequest.source
+    return requestBody.originalDetectIntentRequest.source
 }
 
 function isNotEmpty(array: any): boolean {
