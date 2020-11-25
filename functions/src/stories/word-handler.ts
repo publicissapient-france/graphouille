@@ -1,4 +1,6 @@
-import * as store from '../store/store';
+import { Store } from '../store/store';
+
+const store = Store.getInstance();
 
 function getEntity(requestBody: any, name: string): any {
     return requestBody.queryResult.parameters[name]
@@ -14,7 +16,7 @@ function isNotEmpty(array: any): boolean {
 
 export async function addWord(request: any): Promise<string> {
     const words: Array<string> = getEntity(request, "any")
-    const readonly: boolean = getSource(request) == "DIALOGFLOW_CONSOLE" ? true : false
+    const readonly: boolean = getSource(request) === "DIALOGFLOW_CONSOLE" ? true : false
 
     if (isNotEmpty(words)) {
         return store.updateCollection(words.map(w => w.toLowerCase()), readonly)
@@ -33,7 +35,7 @@ export async function addWord(request: any): Promise<string> {
 
 export async function deleteWord(request: any): Promise<string> {
     const words: Array<string> = getEntity(request, "any")
-    const readonly: boolean = getSource(request) == "DIALOGFLOW_CONSOLE" ? true : false
+    const readonly: boolean = getSource(request) === "DIALOGFLOW_CONSOLE" ? true : false
 
     if (isNotEmpty(words)) {
         return store.deleteCollection(words.map(w => w.toLowerCase()), readonly)

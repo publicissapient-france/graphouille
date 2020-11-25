@@ -1,18 +1,34 @@
 import * as firestore from './firestore';
 import * as logstore from './logstore';
 
-const db = firestore.init()
+export class Store {
+    private static instance: Store;
+    private db: FirebaseFirestore.Firestore;
 
-export function updateCollection(words: Array<string>, readonly: boolean): Promise<any> {
-    if(readonly) return logstore.updateCollection(words);
-    else return firestore.updateCollection(db, words);
-}
+    private constructor() {
+        this.db = firestore.init()
+    }
 
-export function deleteCollection(words: Array<string>, readonly: boolean): Promise<any> {
-    if(readonly) return logstore.deleteCollection(words);
-    else return firestore.deleteCollection(db, words);
-}
+    public static getInstance(): Store {
+        if (!Store.instance) {
+            Store.instance = new Store();
+        }
 
-export function getWords(number?: number): Promise<any> {
-    return firestore.getWords(db, number);
+        return Store.instance;
+    }
+
+    public updateCollection(words: Array<string>, readonly: boolean): Promise<any> {
+        if (readonly) return logstore.updateCollection(words);
+        else return firestore.updateCollection(this.db, words);
+    }
+
+    public deleteCollection(words: Array<string>, readonly: boolean): Promise<any> {
+        if (readonly) return logstore.deleteCollection(words);
+        else return firestore.deleteCollection(this.db, words);
+    }
+
+    public getWords(number?: number): Promise<any> {
+        return firestore.getWords(this.db, number);
+    }
+
 }
