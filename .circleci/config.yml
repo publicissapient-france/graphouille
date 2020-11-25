@@ -17,6 +17,14 @@ jobs:
           command: cd functions && npm install
 
       - run:
+          name: set slack webhook URL
+          command: firebase functions:config:set slack.url=$SLACK_URL
+
+      - run:
+          name: set slack channel ID
+          command: firebase functions:config:set slack.channelid=$SLACK_CHANNELID    
+
+      - run:
           name: build & deploy with firebase
           command: cd functions && ./node_modules/.bin/firebase deploy --token=$FIREBASE_DEPLOY_TOKEN
               
