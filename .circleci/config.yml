@@ -18,7 +18,7 @@ jobs:
 
       - run:
           name: set slack webhook URL
-          command: npx firebase functions:config:set slack.url=$SLACK_URL
+          command: cd functions && ./node_modules/.bin/firebase functions:config:set slack.url=$SLACK_URL
 
       - run:
           name: set slack channel ID
