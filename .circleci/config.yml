@@ -18,11 +18,11 @@ jobs:
 
       - run:
           name: set slack webhook URL
-          command: cd functions && ./node_modules/.bin/firebase functions:config:set slack.url=$SLACK_URL
+          command: cd functions && ./node_modules/.bin/firebase functions:config:set slack.url=$SLACK_URL --token=$FIREBASE_DEPLOY_TOKEN
 
       - run:
           name: set slack channel ID
-          command: cd functions && ./node_modules/.bin/firebase functions:config:set slack.channelid=$SLACK_CHANNELID    
+          command: cd functions && ./node_modules/.bin/firebase functions:config:set slack.channelid=$SLACK_CHANNELID --token=$FIREBASE_DEPLOY_TOKEN   
 
       - run:
           name: build & deploy with firebase
