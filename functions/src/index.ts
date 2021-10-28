@@ -1,9 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as wordhandler from './stories/word-handler';
 import * as dialogflowresponse from './dialogflow-response';
-import { IncomingWebhook } from '@slack/webhook';
-import { Store } from './store/store';
-import * as SlackMessage from './slack-response';
 
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request: any, response: any) => {
   console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
@@ -40,25 +37,3 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request: any,
     );
   }
 });
-
-exports.sendMessageToSlack = functions.pubsub.schedule('0 10 * * 1')
-  .timeZone('Europe/Paris')
-  .onRun(() => {
-    const channelUrl = functions.config().slack.url
-    const channelId = functions.config().slack.channelid
-
-    if (!channelId || !channelUrl) {
-      return 'Wrong channelId or channelUrl.\nProvide in request body: slack.channelId and slack.channelUrl in JSON format';
-    }
-
-    const webhook = new IncomingWebhook(channelUrl);
-
-    return Store.getInstance()
-      .getWords(1)
-      .then((word: string) => {
-        return webhook.send(
-          SlackMessage.formatResponse( `Nouveau mot ! *${word}* - à dessiner en 20 secondes - 
-        
-          ✏ à poster dans <#${channelId}>`))
-      });
-  });
